@@ -1,0 +1,5 @@
+DEFINE max_by_group (X,groupkey) RETURNS Y
+{
+$Y = group $X by $groupkey;
+};
+
