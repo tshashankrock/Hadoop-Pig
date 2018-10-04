@@ -1,0 +1,67 @@
+-----------------------------------------------------------------------------------------------------------------------------------------------
+newrecord = LOAD '/home/shashank/Desktop/rough.txt' using PigStorage(',') as (firstname:chararray,lastname:chararray,city:chararray,gender:chararray,cgpa:double,college:chararray);
+
+dump newrecord;
+
+(shashank,tripathi,Gonda,Male,7.6,JIIT)
+(shivang,tripathi,lucknow,female,8.6,IIT)
+(harsh,dwivedi,delhi,Male,7.3,JIIT)
+(shubham,singh,noida,Male,7.6,JIIT)
+(shivangi,tripathi,delhi,Male,8.6,JIIT)
+(Nikita,tripathi,noida,Male,7.6,NIIT)
+(saloni,Mayar,Punjab,Male,8.6,KIIT)
+(Aviral,Rajput,Punjab,Male,7.6,NIIT)
+(shiv,dwivedi,Gonda,Male,7.3,JIIT)
+-----------------------------------------------------------------------------------------------------------------------------------------------
+order_data = order newrecord by cgpa asc;
+
+dump order_data;
+
+(shiv,dwivedi,Gonda,Male,7.3,JIIT)
+(harsh,dwivedi,delhi,Male,7.3,JIIT)
+(Aviral,Rajput,Punjab,Male,7.6,NIIT)
+(Nikita,tripathi,noida,Male,7.6,NIIT)
+(shubham,singh,noida,Male,7.6,JIIT)
+(shashank,tripathi,Gonda,Male,7.6,JIIT)
+(saloni,Mayar,Punjab,Male,8.6,KIIT)
+(shivangi,tripathi,delhi,Male,8.6,JIIT)
+(shivang,tripathi,lucknow,female,8.6,IIT)
+-----------------------------------------------------------------------------------------------------------------------------------------------
+group_data = group order_data by city;
+
+dump group_data;
+
+(Gonda,{(shashank,tripathi,Gonda,Male,7.6,JIIT),(shiv,dwivedi,Gonda,Male,7.3,JIIT)})
+(delhi,{(shivangi,tripathi,delhi,Male,8.6,JIIT),(harsh,dwivedi,delhi,Male,7.3,JIIT)})
+(noida,{(shubham,singh,noida,Male,7.6,JIIT),(Nikita,tripathi,noida,Male,7.6,NIIT)})
+(Punjab,{(saloni,Mayar,Punjab,Male,8.6,KIIT),(Aviral,Rajput,Punjab,Male,7.6,NIIT)})
+(lucknow,{(shivang,tripathi,lucknow,female,8.6,IIT)})
+-----------------------------------------------------------------------------------------------------------------------------------------------
+count_tuple = foreach group_data generate COUNT(order_data);
+ 
+dump count_tuple;
+
+(2)
+(2)
+(2)
+(2)
+(1)
+-----------------------------------------------------------------------------------------------------------------------------------------------
+grunt> data_top = foreach group_data {
+>> top = TOP(2,5,order_data);     
+>> generate flatten(top);         
+>> }
+
+dump data_top;
+
+(shashank,tripathi,Gonda,Male,7.6,JIIT)
+(shiv,dwivedi,Gonda,Male,7.3,JIIT)
+(shivangi,tripathi,delhi,Male,8.6,JIIT)
+(harsh,dwivedi,delhi,Male,7.3,JIIT)
+(shubham,singh,noida,Male,7.6,JIIT)
+(Nikita,tripathi,noida,Male,7.6,NIIT)
+(saloni,Mayar,Punjab,Male,8.6,KIIT)
+(Aviral,Rajput,Punjab,Male,7.6,NIIT)
+(shivang,tripathi,lucknow,female,8.6,IIT)
+-----------------------------------------------------------------------------------------------------------------------------------------------
+

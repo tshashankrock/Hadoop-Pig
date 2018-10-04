@@ -1,0 +1,41 @@
+Command:
+1:student = LOAD '/home/shashank/Desktop/rough.txt' USING PigStorage(',') as (firstname:chararray, lastname:chararray, phy:int ,chem:int, math:int, gender:chararray, cgpa:double, college:chararray);
+
+2:dump student;
+
+3:group_data = GROUP student by (cgpa,gender);
+
+4:illustrate group_data;  // gives you the step-by-step execution of a sequence of statements.
+
+5:describe group_data;  //view the schema of a relation.
+
+6:group_data = GROUP student All;
+
+7:fun  = FILTER student BY (firstname matches '.*asha.*'); //for matching name containing shashank
+
+8:fun = FILTER student BY firstname is not null; // check firstname which are not null we can use null also in place of not null to check which firstname contain null
+
+9:fun  = FILTER student BY (phy==95) AND (phy+chem > math); //use of boolean operator
+
+10:dereference = FOREACH group_data generate student.firstname,student.cgpa;     //use to access the data inside the tuple
+
+applicable on those case where tuple exist i.e () is represented by tuple :
+group_data: {group: double,order_data: {(firstname: chararray,lastname: chararray,phy: int,chem: int,math: int,gender: chararray,cgpa: double,college: chararray)}}
+example:(7.3,{(harsh,dwivedi,90,86,96,Male,7.3,JIIT)})
+
+Note:------------------------------------------------------------------------------------
+grunt> describe order_data;
+order_data: {firstname: chararray,lastname: chararray,phy: int,chem: int,math: int,gender: chararray,cgpa: double,college: chararray}
+grunt> describe group_data;
+group_data: {group: chararray,student: {(firstname: chararray,lastname: chararray,phy: int,chem: int,math: int,gender: chararray,cgpa: double,college: chararray)}}
+
+see order_data is bag i.e {} where as group_data contain bag but inside it it contain tuple
+---------------------------------------------------------------------------------------------
+data_top = foreach bag3 {                                   
+>> //count_tuple = foreach group_data generate COUNT(order_data);
+>> top = TOP((count_tuple)<-nahi hoga 2,5,order_data);                        
+>> generate flatten(top);                                      
+>> }
+
+
+nested_op foreach loop  allowed operations are CROSS, DISTINCT, FILTER, FOREACH, LIMIT, and ORDER BY. 

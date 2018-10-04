@@ -1,0 +1,177 @@
+Pig Command Example:
+-----------------------------------------------------------------------------------------------------------------------------------------------
+Dataset:
+Shivam,tripathi,Gonda,Male,9.6,JIIT
+Rahul,tripathi,lucknow,Male,8.6,IIT
+Shubham,dwivedi,Delhi,Male,7.3,JIIT
+Aviral,Singh,Noida,Male,7.6,JIIT
+Ankit,tripathi,Delhi,Male,8.6,JIIT
+Nikita,tripathi,Noida,Male,7.6,NIIT
+Sahil,Mayar,Punjab,Male,8.6,KIIT
+Chirag,Rajput,Punjab,Male,7.6,NIIT
+Avinash,dwivedi,Lucknow,Male,7.3,JIIT
+-----------------------------------------------------------------------------------------------------------------------------------------------
+Q-1:Find the topper of each city;
+>newrecord = LOAD '/home/shashank/Desktop/rough.txt' using PigStorage(',') as (firstname:chararray,lastname:chararray,city:chararray,gender:chararray,cgpa:double,college:chararray);
+
+>dump newrecord;
+
+(Shivam,tripathi,Gonda,Male,9.6,JIIT)
+(Rahul,tripathi,lucknow,Male,8.6,IIT)
+(Shubham,dwivedi,Delhi,Male,7.3,JIIT)
+(Aviral,Singh,Noida,Male,7.6,JIIT)
+(Ankit,tripathi,Delhi,Male,8.6,JIIT)
+(Nikita,tripathi,Noida,Male,7.6,NIIT)
+(Sahil,Mayar,Punjab,Male,8.6,KIIT)
+(Chirag,Rajput,Punjab,Male,7.6,NIIT)
+(Avinash,dwivedi,Lucknow,Male,7.3,JIIT)
+
+>order_data = order newrecord by cgpa asc;
+
+>dump newrecord;
+
+(Avinash,dwivedi,Lucknow,Male,7.3,JIIT)
+(Shubham,dwivedi,Delhi,Male,7.3,JIIT)
+(Chirag,Rajput,Punjab,Male,7.6,NIIT)
+(Nikita,tripathi,Noida,Male,7.6,NIIT)
+(Aviral,Singh,Noida,Male,7.6,JIIT)
+(Sahil,Mayar,Punjab,Male,8.6,KIIT)
+(Ankit,tripathi,Delhi,Male,8.6,JIIT)
+(Rahul,tripathi,lucknow,Male,8.6,IIT)
+(Shivam,tripathi,Gonda,Male,9.6,JIIT)
+
+>group_data = group order_data by city;
+
+>dump group_data;
+
+(Delhi,{(Ankit,tripathi,Delhi,Male,8.6,JIIT),(Shubham,dwivedi,Delhi,Male,7.3,JIIT)})
+(Gonda,{(Shivam,tripathi,Gonda,Male,9.6,JIIT)})
+(Noida,{(Aviral,Singh,Noida,Male,7.6,JIIT),(Nikita,tripathi,Noida,Male,7.6,NIIT)})
+(Punjab,{(Sahil,Mayar,Punjab,Male,8.6,KIIT),(Chirag,Rajput,Punjab,Male,7.6,NIIT)})
+(Lucknow,{(Avinash,dwivedi,Lucknow,Male,7.3,JIIT)})
+(lucknow,{(Rahul,tripathi,lucknow,Male,8.6,IIT)})
+
+>data_top = foreach group_data {
+>>top = TOP(1,5,order_data);
+>>generate flatten(top);
+>>}
+
+dump data_top;
+
+(Shubham,dwivedi,Delhi,Male,7.3,JIIT)
+(Shivam,tripathi,Gonda,Male,9.6,JIIT)
+(Nikita,tripathi,Noida,Male,7.6,NIIT)
+(Chirag,Rajput,Punjab,Male,7.6,NIIT)
+(Avinash,dwivedi,Lucknow,Male,7.3,JIIT)
+(Rahul,tripathi,lucknow,Male,8.6,IIT)
+-----------------------------------------------------------------------------------------------------------------------------------------------
+Q-2:Find the top 5 student  according to cgpa;
+
+>newrecord = LOAD '/home/shashank/Desktop/rough.txt' using PigStorage(',') as (firstname:chararray,lastname:chararray,city:chararray,gender:chararray,cgpa:double,college:chararray);
+
+>dump newrecord;
+
+(Shivam,tripathi,Gonda,Male,9.6,JIIT)
+(Rahul,tripathi,lucknow,Male,8.6,IIT)
+(Shubham,dwivedi,Delhi,Male,7.3,JIIT)
+(Aviral,Singh,Noida,Male,7.6,JIIT)
+(Ankit,tripathi,Delhi,Male,8.6,JIIT)
+(Nikita,tripathi,Noida,Male,7.6,NIIT)
+(Sahil,Mayar,Punjab,Male,8.6,KIIT)
+(Chirag,Rajput,Punjab,Male,7.6,NIIT)
+(Avinash,dwivedi,Lucknow,Male,7.3,JIIT)
+
+>order_data = order newrecord by cgpa desc;
+
+>dump order_data;
+
+(Shivam,tripathi,Gonda,Male,9.6,JIIT)
+(Sahil,Mayar,Punjab,Male,8.6,KIIT)
+(Ankit,tripathi,Delhi,Male,8.6,JIIT)
+(Rahul,tripathi,lucknow,Male,8.6,IIT)
+(Chirag,Rajput,Punjab,Male,7.6,NIIT)
+(Nikita,tripathi,Noida,Male,7.6,NIIT)
+(Aviral,Singh,Noida,Male,7.6,JIIT)
+(Avinash,dwivedi,Lucknow,Male,7.3,JIIT)
+(Shubham,dwivedi,Delhi,Male,7.3,JIIT)
+
+>data_top = limit order_data 5;
+dump data_top;
+
+>dump data_top;
+
+(Shivam,tripathi,Gonda,Male,9.6,JIIT)
+(Rahul,tripathi,lucknow,Male,8.6,IIT)
+(Ankit,tripathi,Delhi,Male,8.6,JIIT)
+(Sahil,Mayar,Punjab,Male,8.6,KIIT)
+(Chirag,Rajput,Punjab,Male,7.6,NIIT)
+
+-----------------------------------------------------------------------------------------------------------------------------------------------
+Q-3 Find the average cgpa of each city scored by the student
+
+>newrecord = LOAD '/home/shashank/Desktop/rough.txt' using PigStorage(',') as (firstname:chararray,lastname:chararray,city:chararray,gender:chararray,cgpa:double,college:chararray);
+
+>dump newrecord;
+
+(Shivam,tripathi,Gonda,Male,9.6,JIIT)
+(Rahul,tripathi,lucknow,Male,8.6,IIT)
+(Shubham,dwivedi,Delhi,Male,7.3,JIIT)
+(Aviral,Singh,Noida,Male,7.6,JIIT)
+(Ankit,tripathi,Delhi,Male,8.6,JIIT)
+(Nikita,tripathi,Noida,Male,7.6,NIIT)
+(Sahil,Mayar,Punjab,Male,8.6,KIIT)
+(Chirag,Rajput,Punjab,Male,7.6,NIIT)
+(Avinash,dwivedi,Lucknow,Male,7.3,JIIT)
+
+>group_data = group newrecord by city;
+
+>dump group_data;
+
+(Delhi,{(Ankit,tripathi,Delhi,Male,8.6,JIIT),(Shubham,dwivedi,Delhi,Male,7.3,JIIT)})
+(Gonda,{(Shivam,tripathi,Gonda,Male,9.6,JIIT)})
+(Noida,{(Nikita,tripathi,Noida,Male,7.6,NIIT),(Aviral,Singh,Noida,Male,7.6,JIIT)})
+(Punjab,{(Chirag,Rajput,Punjab,Male,7.6,NIIT),(Sahil,Mayar,Punjab,Male,8.6,KIIT)})
+(Lucknow,{(Avinash,dwivedi,Lucknow,Male,7.3,JIIT)})
+(lucknow,{(Rahul,tripathi,lucknow,Male,8.6,IIT)})
+
+>data_top = foreach group_data {
+>>generate group,AVG(newrecord.cgpa);
+>>}
+
+dump data_top;
+
+(Delhi,7.949999999999999)
+(Gonda,9.6)
+(Noida,7.6)
+(Punjab,8.1)
+(Lucknow,7.3)
+(lucknow,8.6)
+
+-----------------------------------------------------------------------------------------------------------------------------------------------
+Q- : To count the null value present in the data;
+>newrecord = LOAD '/home/shashank/Desktop/rough.txt' using PigStorage(',') as (firstname:chararray,lastname:chararray,city:chararray,gender:chararray,cgpa:double,college:chararray);
+>filter_data = FILTER newrecord by (firstname is null) OR (cgpa is null) OR (gender is null);
+>group_data = GROUP filter_data ALL;
+>final = foreach group_data generate (group,COUNT_STAR(filter_data)); //COUNT_STAR count null also 
+while count do not count null;
+
+OR another method:
+Use split method;
+>SPLIT newrecord INTO good_record if (age is not null) OR (gender is not null), bad_record OTHERWISE;
+>group_data = GROUP filter_data ALL;
+>final = foreach group_data generate (group,COUNT_STAR(filter_data)); //COUNT_STAR count null also 
+while count do not count null;
+
+-----------------------------------------------------------------------------------------------------------------------------------------------
+Q-; To take correct input:
+A = LOAD 'input/pig/corrupt/missing_fields';
+DUMP A;
+(2,Tie)
+(4,Coat)
+(3)
+(1,Scarf)
+grunt> B = FILTER A BY SIZE(TOTUPLE(*)) > 1;
+grunt> DUMP B;
+(2,Tie)
+(4,Coat)
+(1,Scarf)
